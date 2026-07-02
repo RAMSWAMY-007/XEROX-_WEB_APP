@@ -1,0 +1,79 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roll_number   String   @unique
+  name          String
+  password_hash String
+  role          Role     @default(student)
+  created_at    DateTime @default(now())
+
+  orders        Order[]
+  @@map("users")
+}
+
+model Order {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  student_id     String        @db.Uuid
+  student        User          @relation(fields: [student_id], references: [id])
+  
+  file_url       String
+  file_name      String
+  page_count     Int
+  paper_size     PaperSize     @default(A4)
+  color_mode     ColorMode     @default(bw)
+  copies         Int           @default(1)
+  binding        Boolean       @default(false)
+  source         Source        @default(web)
+  status         OrderStatus   @default(pending)
+  payment_status PaymentStatus @default(pending)
+  payment_id     String?
+  amount         Decimal       @db.Decimal(10, 2)
+  
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  @@map("orders")
+}
+
+enum Role {
+  student
+  admin
+}
+
+enum PaperSize {
+  A4
+  A3
+  Letter
+}
+
+enum ColorMode {
+  bw
+  color
+}
+
+enum Source {
+  web
+  walk_in @map("walk-in")
+}
+
+enum OrderStatus {
+  pending
+  printing
+  ready
+  completed
+  cancelled
+}
+
+enum PaymentStatus {
+  paid
+  pending
+  cod
+}
