@@ -120,3 +120,32 @@ exports.loginAdmin = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.seedDatabase = async (req, res) => {
+  try {
+    const adminPassword = 'password123';
+    const studentPassword = 'password123';
+    const salt = await bcrypt.genSalt(10);
+    const adminHash = await bcrypt.hash(adminPassword, salt);
+    const studentHash = await bcrypt.hash(studentPassword, salt);
+
+    // Seed Admin
+    await prisma.user.upsert({
+      where: { roll_number: 'admin' },
+      update: { password_hash: adminHash },
+      create: { roll_number: 'admin', name: 'Super Admin', password_hash: adminHash, role: 'admin' }
+    });
+
+    // Seed Demo Student
+    await prisma.user.upsert({
+      where: { roll_number: '12345' },
+      update: { password_hash: studentHash },
+      create: { roll_number: '12345', name: 'Demo Student', password_hash: studentHash, role: 'student' }
+    });
+
+    res.json({ message: 'Database seeded successfully on the live server! You can now log in.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error seeding database', error: error.message });
+  }
+};
