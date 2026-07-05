@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { createOrder } from '../api/client';
+import StudentLogin from './StudentLogin';
 
 const Home = () => (
   <div className="flex flex-col items-center justify-center min-h-[80vh] animate-fade-in">
@@ -17,17 +18,32 @@ const Home = () => (
   </div>
 );
 
+// Protect student upload route
+const ProtectedStudentRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+};
+
 const Upload = () => {
   const [file, setFile] = useState(null);
+  const navigate = useNavigate();
   
   const mutation = useMutation({
     mutationFn: createOrder,
     onSuccess: (data) => {
       alert('Order Placed Successfully! ID: ' + data.order.id);
       setFile(null);
+      navigate('/orders');
     },
     onError: (error) => {
-      alert('Failed to place order: ' + (error.response?.data?.message || error.message));
+      if (error.response?.status === 401) {
+        alert('Your session expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
+        alert('Failed to place order: ' + (error.response?.data?.message || error.message));
+      }
     }
   });
 
@@ -78,6 +94,14 @@ const Upload = () => {
 };
 
 const StudentApp = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
   return (
     <div 
       className="min-h-screen font-sans text-gray-900"
@@ -85,19 +109,30 @@ const StudentApp = () => {
     >
       <nav className="glass rounded-none px-6 py-4 sticky top-0 z-50 flex justify-between items-center">
         <Link to="/" className="text-xl font-bold text-primary-600">PrintHub</Link>
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
           <Link to="/orders" className="text-gray-600 hover:text-primary-600 transition-colors font-medium">My Orders</Link>
-          <div className="inline-block w-10 h-10 rounded-full bg-gradient-to-tr from-primary-400 to-primary-600 text-white flex items-center justify-center font-bold shadow-md cursor-pointer">
-            S
-          </div>
+          {token ? (
+            <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-700 font-medium ml-4">Logout</button>
+          ) : (
+            <Link to="/login" className="text-sm text-primary-600 hover:text-primary-700 font-medium ml-4">Login</Link>
+          )}
         </div>
       </nav>
       
       <main className="container mx-auto px-4 py-8">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/upload" element={<Upload />} />
-          <Route path="/orders" element={<div className="text-center mt-20 text-gray-500">Order history coming soon...</div>} />
+          <Route path="/login" element={<StudentLogin />} />
+          <Route path="/upload" element={
+            <ProtectedStudentRoute>
+              <Upload />
+            </ProtectedStudentRoute>
+          } />
+          <Route path="/orders" element={
+            <ProtectedStudentRoute>
+              <div className="text-center mt-20 text-gray-500">Order history coming soon...</div>
+            </ProtectedStudentRoute>
+          } />
         </Routes>
       </main>
     </div>

@@ -40,6 +40,11 @@ export const adminLogin = async (credentials) => {
   return response.data;
 };
 
+export const studentLogin = async (credentials) => {
+  const response = await client.post('/auth/student/login', credentials);
+  return response.data;
+};
+
 export const getQueue = async () => {
   const response = await client.get('/admin/queue');
   return response.data;
