@@ -32,7 +32,7 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+    const socket = io(import.meta.env.VITE_API_URL || 'https://xerox-backend-plld.onrender.com');
     socket.emit('join-admin');
     
     socket.on('new-order', () => {
