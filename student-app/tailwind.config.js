@@ -13,6 +13,13 @@ export default {
           600: '#0284c7',
           700: '#0369a1',
         },
+        admin: {
+          50: '#f5f3ff',
+          100: '#ede9fe',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          900: '#4c1d95',
+        },
         background: '#f8fafc',
         surface: '#ffffff'
       },

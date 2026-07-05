@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://xerox-backend-plld.onrender.com/api';
+let rawApiUrl = import.meta.env.VITE_API_URL || 'https://xerox-backend-plld.onrender.com/api';
+// Fix for missing /api at the end (solves the 404 issue!)
+if (rawApiUrl && !rawApiUrl.endsWith('/api')) {
+  rawApiUrl = rawApiUrl.endsWith('/') ? rawApiUrl + 'api' : rawApiUrl + '/api';
+}
+const API_URL = rawApiUrl;
 
 const client = axios.create({
   baseURL: API_URL,
@@ -26,6 +31,27 @@ export const createOrder = async (formData) => {
 
 export const getMyOrders = async () => {
   const response = await client.get('/orders/my');
+  return response.data;
+};
+
+// --- Admin API Functions ---
+export const adminLogin = async (credentials) => {
+  const response = await client.post('/auth/admin/login', credentials);
+  return response.data;
+};
+
+export const getQueue = async () => {
+  const response = await client.get('/admin/queue');
+  return response.data;
+};
+
+export const updateOrderStatus = async ({ id, status }) => {
+  const response = await client.patch(`/admin/orders/${id}/status`, { status });
+  return response.data;
+};
+
+export const batchPrintOrders = async (orderIds) => {
+  const response = await client.post('/admin/orders/batch-print', { orderIds });
   return response.data;
 };
 
