@@ -11,7 +11,7 @@ const generateToken = (userId, role) => {
 // For testing purposes - allowing student registration
 exports.registerStudent = async (req, res) => {
   try {
-    const { roll_number, name, password } = req.body;
+    const { roll_number, name, phone_number, password } = req.body;
     
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -29,6 +29,7 @@ exports.registerStudent = async (req, res) => {
       data: {
         roll_number,
         name,
+        phone_number,
         password_hash,
         role: 'student'
       }
@@ -42,6 +43,7 @@ exports.registerStudent = async (req, res) => {
         id: user.id,
         roll_number: user.roll_number,
         name: user.name,
+        phone_number: user.phone_number,
         role: user.role
       }
     });

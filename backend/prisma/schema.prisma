@@ -11,6 +11,7 @@ model User {
   id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   roll_number   String   @unique
   name          String
+  phone_number  String?
   password_hash String
   role          Role     @default(student)
   created_at    DateTime @default(now())
@@ -33,6 +34,7 @@ model Order {
   binding        Boolean       @default(false)
   source         Source        @default(web)
   status         OrderStatus   @default(pending)
+  payment_method PaymentMethod @default(offline)
   payment_status PaymentStatus @default(pending)
   payment_id     String?
   amount         Decimal       @db.Decimal(10, 2)
@@ -51,6 +53,7 @@ enum Role {
 enum PaperSize {
   A4
   A3
+  A5
   Letter
 }
 
@@ -76,4 +79,9 @@ enum PaymentStatus {
   paid
   pending
   cod
+}
+
+enum PaymentMethod {
+  online
+  offline
 }

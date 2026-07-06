@@ -9,13 +9,14 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const { paper_size, color_mode, copies, binding } = req.body;
+    const { paper_size, color_mode, copies, binding, payment_method } = req.body;
 
     // Default values if not provided
     const _paper_size = paper_size || 'A4';
     const _color_mode = color_mode || 'bw';
     const _copies = copies ? parseInt(copies, 10) : 1;
     const _binding = binding === 'true' || binding === true;
+    const _payment_method = payment_method || 'offline';
 
     // Recruiter-ready feature: Verify page count dynamically server-side from buffer
     const fileBuffer = req.file.buffer;
@@ -56,6 +57,7 @@ exports.createOrder = async (req, res) => {
         color_mode: _color_mode,
         copies: _copies,
         binding: _binding,
+        payment_method: _payment_method,
         amount
       }
     });

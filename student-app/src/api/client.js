@@ -54,6 +54,11 @@ export const studentLogin = async (credentials) => {
   return response.data;
 };
 
+export const studentRegister = async (userData) => {
+  const response = await client.post('/auth/student/register', userData);
+  return response.data;
+};
+
 export const getQueue = async () => {
   const response = await client.get('/admin/queue');
   return response.data;
@@ -64,8 +69,26 @@ export const updateOrderStatus = async ({ id, status }) => {
   return response.data;
 };
 
+export const updateOrderPrice = async ({ id, amount }) => {
+  const response = await client.patch(`/admin/orders/${id}/price`, { amount });
+  return response.data;
+};
+
 export const batchPrintOrders = async (orderIds) => {
   const response = await client.post('/admin/orders/batch-print', { orderIds });
+  return response.data;
+};
+
+// --- Student API Functions ---
+export const createOrder = async (formData) => {
+  const response = await client.post('/orders', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return response.data;
+};
+
+export const getMyOrders = async () => {
+  const response = await client.get('/orders');
   return response.data;
 };
 

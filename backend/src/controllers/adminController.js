@@ -78,6 +78,33 @@ exports.updateOrderStatus = async (req, res) => {
   }
 };
 
+exports.updateOrderPrice = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount } = req.body;
+
+    if (amount === undefined || amount < 0) {
+      return res.status(400).json({ message: 'Invalid amount' });
+    }
+
+    const order = await prisma.order.update({
+      where: { id },
+      data: { amount }
+    });
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`student-${order.student_id}`).emit('order-updated', order);
+      io.to('admins').emit('queue-updated', order);
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error updating order price' });
+  }
+};
+
 exports.batchPrintOrders = async (req, res) => {
   try {
     const { orderIds } = req.body; // Array of IDs

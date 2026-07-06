@@ -9,6 +9,7 @@ router.use(adminOnly);
 
 router.get('/queue', adminController.getQueue);
 router.patch('/orders/:id/status', adminController.updateOrderStatus);
+router.patch('/orders/:id/price', adminController.updateOrderPrice);
 router.get('/orders', adminController.getAllOrders);
 router.post('/orders/batch-print', adminController.batchPrintOrders); // New recruiter-ready feature
 
