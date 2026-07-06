@@ -79,17 +79,4 @@ export const batchPrintOrders = async (orderIds) => {
   return response.data;
 };
 
-// --- Student API Functions ---
-export const createOrder = async (formData) => {
-  const response = await client.post('/orders', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  });
-  return response.data;
-};
-
-export const getMyOrders = async () => {
-  const response = await client.get('/orders');
-  return response.data;
-};
-
 export default client;
