@@ -32,6 +32,9 @@ model Order {
   color_mode     ColorMode     @default(bw)
   copies         Int           @default(1)
   binding        Boolean       @default(false)
+  print_sides    PrintSides    @default(single)
+  paper_type     PaperType     @default(standard)
+  notes          String?
   source         Source        @default(web)
   status         OrderStatus   @default(pending)
   payment_method PaymentMethod @default(offline)
@@ -84,4 +87,14 @@ enum PaymentStatus {
 enum PaymentMethod {
   online
   offline
+}
+
+enum PrintSides {
+  single
+  double
+}
+
+enum PaperType {
+  standard
+  glossy
 }

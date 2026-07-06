@@ -149,11 +149,18 @@ const Dashboard = () => {
                       <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">{order.color_mode}</span>
                       <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">{order.paper_size}</span>
                       <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">{order.copies}x</span>
+                      {order.print_sides === 'double' && <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">2-Sided</span>}
+                      {order.paper_type === 'glossy' && <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 text-[10px] rounded-md font-bold uppercase border border-amber-500/30">Glossy</span>}
                       {order.binding && <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[10px] rounded-md font-bold uppercase border border-indigo-500/30">Spiral</span>}
                       <span className={`px-2 py-0.5 text-[10px] rounded-md font-bold uppercase border ${order.payment_method === 'online' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'}`}>
                         {order.payment_method}
                       </span>
                     </div>
+                    {order.notes && (
+                      <div className="mt-2 text-xs text-amber-400 bg-amber-500/10 p-1.5 rounded border border-amber-500/20 inline-block max-w-full break-words">
+                        <span className="font-bold">📝 Note:</span> {order.notes}
+                      </div>
+                    )}
                   </td>
                   <td className="py-4 font-bold text-slate-200">
                     {editingPriceId === order.id ? (

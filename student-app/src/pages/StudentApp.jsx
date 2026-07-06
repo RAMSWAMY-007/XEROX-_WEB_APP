@@ -40,6 +40,9 @@ const Upload = () => {
   const [copies, setCopies] = useState(1);
   const [binding, setBinding] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('offline');
+  const [printSides, setPrintSides] = useState('single');
+  const [paperType, setPaperType] = useState('standard');
+  const [notes, setNotes] = useState('');
   
   const navigate = useNavigate();
   
@@ -70,6 +73,9 @@ const Upload = () => {
     formData.append('copies', copies);
     formData.append('binding', binding.toString());
     formData.append('payment_method', paymentMethod);
+    formData.append('print_sides', printSides);
+    formData.append('paper_type', paperType);
+    if (notes.trim()) formData.append('notes', notes.trim());
     
     mutation.mutate(formData);
   };
@@ -133,28 +139,54 @@ const Upload = () => {
           <div className="space-y-6">
             <div className="bg-white/80 p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
               
-              {/* Color Mode */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-3">Print Type</label>
-                <div className="flex gap-3">
-                  <button onClick={() => setColorMode('bw')} className={`flex-1 py-2 rounded-lg border-2 font-semibold ${colorMode === 'bw' ? 'border-slate-800 bg-slate-800 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                    Black & White
-                  </button>
-                  <button onClick={() => setColorMode('color')} className={`flex-1 py-2 rounded-lg border-2 font-semibold ${colorMode === 'color' ? 'border-primary-500 bg-primary-500 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                    Full Color
-                  </button>
+              {/* Color Mode & Sides */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-700 font-bold mb-3">Color</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setColorMode('bw')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${colorMode === 'bw' ? 'border-slate-800 bg-slate-800 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      B & W
+                    </button>
+                    <button onClick={() => setColorMode('color')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${colorMode === 'color' ? 'border-primary-500 bg-primary-500 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      Color
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold mb-3">Sides</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setPrintSides('single')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${printSides === 'single' ? 'border-slate-800 bg-slate-800 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      Single
+                    </button>
+                    <button onClick={() => setPrintSides('double')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${printSides === 'double' ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      Double
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Paper Size */}
-              <div>
-                <label className="block text-gray-700 font-bold mb-3">Paper Size</label>
-                <div className="flex gap-3">
-                  {['A4', 'A3', 'A5'].map(size => (
-                    <button key={size} onClick={() => setPaperSize(size)} className={`flex-1 py-2 rounded-lg border-2 font-semibold ${paperSize === size ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
-                      {size}
+              {/* Paper Size & Quality */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-700 font-bold mb-3">Paper Size</label>
+                  <div className="flex gap-2">
+                    {['A4', 'A3', 'A5'].map(size => (
+                      <button key={size} onClick={() => setPaperSize(size)} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${paperSize === size ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-bold mb-3">Quality</label>
+                  <div className="flex gap-2">
+                    <button onClick={() => setPaperType('standard')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${paperType === 'standard' ? 'border-slate-800 bg-slate-800 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      Standard
                     </button>
-                  ))}
+                    <button onClick={() => setPaperType('glossy')} className={`flex-1 py-2 rounded-lg border-2 font-semibold text-sm ${paperType === 'glossy' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                      Glossy
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -178,6 +210,18 @@ const Upload = () => {
                     <input type="checkbox" className="hidden" checked={binding} onChange={(e) => setBinding(e.target.checked)} />
                   </label>
                 </div>
+              </div>
+
+              {/* Special Instructions */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">Special Instructions <span className="text-gray-400 font-normal text-sm">(Optional)</span></label>
+                <textarea 
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="e.g., Staple top left corner, Print pages 1-5 only..."
+                  className="w-full border-2 border-gray-200 rounded-xl p-3 text-gray-700 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 outline-none transition-all resize-none"
+                  rows="2"
+                ></textarea>
               </div>
 
             </div>
@@ -237,9 +281,12 @@ const OrderTracking = () => {
               <div>
                 <h3 className="font-bold text-gray-800 text-lg truncate max-w-sm" title={order.file_name}>{order.file_name}</h3>
                 <p className="text-sm text-gray-500 font-medium mt-1">
-                  {order.page_count} pages • {order.color_mode.toUpperCase()} • {order.paper_size} • {order.copies} {order.copies > 1 ? 'copies' : 'copy'}
-                  {order.binding && ' • Spiral Bound'} • {order.payment_method === 'online' ? 'Online Pay' : 'Cash'}
+                  {order.page_count}p • {order.color_mode.toUpperCase()} • {order.paper_size} 
+                  {order.print_sides === 'double' && ' • 2-Sided'} 
+                  {order.paper_type === 'glossy' && ' • Glossy'} 
+                  {order.binding && ' • Spiral'} • {order.copies}x • {order.payment_method === 'online' ? 'Online Pay' : 'Cash'}
                 </p>
+                {order.notes && <p className="text-xs text-amber-600 mt-1 bg-amber-50 p-1.5 rounded inline-block">📝 {order.notes}</p>}
                 <p className="text-xs text-gray-400 mt-2">Ordered: {new Date(order.created_at).toLocaleString()}</p>
               </div>
               

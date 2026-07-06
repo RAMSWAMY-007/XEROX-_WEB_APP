@@ -9,7 +9,7 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const { paper_size, color_mode, copies, binding, payment_method } = req.body;
+    const { paper_size, color_mode, copies, binding, payment_method, print_sides, paper_type, notes } = req.body;
 
     // Default values if not provided
     const _paper_size = paper_size || 'A4';
@@ -17,6 +17,9 @@ exports.createOrder = async (req, res) => {
     const _copies = copies ? parseInt(copies, 10) : 1;
     const _binding = binding === 'true' || binding === true;
     const _payment_method = payment_method || 'offline';
+    const _print_sides = print_sides || 'single';
+    const _paper_type = paper_type || 'standard';
+    const _notes = notes || null;
 
     // Recruiter-ready feature: Verify page count dynamically server-side from buffer
     const fileBuffer = req.file.buffer;
@@ -44,7 +47,9 @@ exports.createOrder = async (req, res) => {
       copies: _copies,
       colorMode: _color_mode,
       paperSize: _paper_size,
-      binding: _binding
+      binding: _binding,
+      printSides: _print_sides,
+      paperType: _paper_type
     });
 
     const order = await prisma.order.create({
@@ -57,6 +62,9 @@ exports.createOrder = async (req, res) => {
         color_mode: _color_mode,
         copies: _copies,
         binding: _binding,
+        print_sides: _print_sides,
+        paper_type: _paper_type,
+        notes: _notes,
         payment_method: _payment_method,
         amount
       }
