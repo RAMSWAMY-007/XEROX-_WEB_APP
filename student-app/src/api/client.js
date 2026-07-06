@@ -13,7 +13,16 @@ const client = axios.create({
 
 // Interceptor to add auth token
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // If request is for admin routes, prioritize admin_token
+  const isAdminRoute = config.url.includes('/admin');
+  let token = null;
+  
+  if (isAdminRoute) {
+    token = localStorage.getItem('admin_token') || localStorage.getItem('token');
+  } else {
+    token = localStorage.getItem('token');
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
