@@ -27,6 +27,10 @@ const Dashboard = () => {
       queryClient.invalidateQueries({ queryKey: ['adminQueue'] });
       setEditingPriceId(null);
       setNewPrice('');
+    },
+    onError: (error) => {
+      alert('Failed to save price. The backend might still be updating, please try again in 1 minute! Error: ' + error.message);
+      setEditingPriceId(null);
     }
   });
 
@@ -252,9 +256,6 @@ const AdminApp = () => {
           <Link to="/admin/history" className="flex items-center px-4 py-3.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-xl transition-all font-semibold">
             <History className="w-5 h-5 mr-3 opacity-60" /> Order History
           </Link>
-          <Link to="/admin/settings" className="flex items-center px-4 py-3.5 text-slate-400 hover:bg-slate-800 hover:text-slate-200 rounded-xl transition-all font-semibold">
-            <Settings className="w-5 h-5 mr-3 opacity-60" /> Pricing Settings
-          </Link>
         </nav>
         <div className="p-6 border-t border-slate-800/50">
           <button onClick={handleLogout} className="flex items-center justify-center w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors font-bold group">
@@ -275,13 +276,6 @@ const AdminApp = () => {
               <History className="w-16 h-16 mb-4 opacity-20" />
               <h2 className="text-xl font-bold text-slate-300">Order History</h2>
               <p className="mt-2">Full historical ledger coming soon.</p>
-            </div>
-          } />
-          <Route path="settings" element={
-            <div className="flex flex-col items-center justify-center h-[60vh] text-slate-500">
-              <Settings className="w-16 h-16 mb-4 opacity-20" />
-              <h2 className="text-xl font-bold text-slate-300">Global Pricing Settings</h2>
-              <p className="mt-2">For now, use the 'Override Price' pencil icon in the Live Queue to set prices.</p>
             </div>
           } />
         </Routes>
