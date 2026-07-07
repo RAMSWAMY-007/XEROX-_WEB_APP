@@ -3,7 +3,26 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getQueue, updateOrderStatus, updateOrderPrice, batchPrintOrders } from '../api/client';
 import io from 'socket.io-client';
-import { LayoutDashboard, History, Settings, LogOut, Edit2, Check, X } from 'lucide-react';
+import { LayoutDashboard, History, Settings, LogOut, Edit2, Check, X, Download } from 'lucide-react';
+
+const downloadFile = async (url, filename) => {
+  try {
+    const finalFilename = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = finalFilename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Download failed:', error);
+    window.open(url, '_blank');
+  }
+};
 
 const Dashboard = () => {
   const queryClient = useQueryClient();
@@ -141,16 +160,14 @@ const Dashboard = () => {
                     <p className="text-xs text-slate-400 mt-0.5">{order.student?.roll_number} • {order.student?.phone_number || 'No phone'}</p>
                   </td>
                   <td className="py-4">
-                    <a 
-                      href={order.file_url ? order.file_url.replace('/upload/', '/upload/fl_attachment/') : '#'} 
-                      target="_blank" 
-                      rel="noreferrer" 
-                      className="text-admin-400 font-semibold hover:text-admin-300 hover:underline truncate max-w-[200px] block" 
+                    <button 
+                      onClick={() => downloadFile(order.file_url ? order.file_url.replace('/upload/', '/upload/fl_attachment/') : '', order.file_name)}
+                      className="text-admin-400 font-semibold hover:text-admin-300 hover:underline truncate max-w-[200px] flex items-center gap-1" 
                       title={order.file_name}
-                      download={order.file_name}
                     >
+                      <Download className="w-4 h-4" />
                       {order.file_name}
-                    </a>
+                    </button>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">{order.page_count}p</span>
                       <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] rounded-md font-bold uppercase">{order.color_mode}</span>
