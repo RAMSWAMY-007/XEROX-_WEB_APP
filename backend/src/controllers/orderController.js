@@ -36,7 +36,7 @@ exports.createOrder = async (req, res) => {
     // Upload to Cloudinary
     let cloudResult;
     try {
-      cloudResult = await uploadBufferToCloudinary(fileBuffer);
+      cloudResult = await uploadBufferToCloudinary(fileBuffer, req.file.originalname);
     } catch (uploadError) {
       console.error('Cloudinary upload error:', uploadError);
       return res.status(500).json({ message: 'Failed to upload file to cloud storage' });

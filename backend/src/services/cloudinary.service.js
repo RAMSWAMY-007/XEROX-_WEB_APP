@@ -10,13 +10,21 @@ cloudinary.config({
 /**
  * Uploads a buffer to Cloudinary
  * @param {Buffer} buffer - File buffer from multer
+ * @param {string} originalName - Original filename to preserve extension
  * @param {string} folder - Folder name in Cloudinary
  * @returns {Promise<Object>} Cloudinary upload result
  */
-exports.uploadBufferToCloudinary = (buffer, folder = 'xerox_uploads') => {
+exports.uploadBufferToCloudinary = (buffer, originalName, folder = 'xerox_uploads') => {
   return new Promise((resolve, reject) => {
+    // Sanitize filename for public_id, keep extension
+    const safeName = originalName ? originalName.replace(/[^a-zA-Z0-9.-]/g, '_') : `upload_${Date.now()}.pdf`;
+    
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder: folder, resource_type: 'raw' },
+      { 
+        folder: folder, 
+        resource_type: 'raw',
+        public_id: `${Date.now()}_${safeName}` // Ensure it has a unique name with proper extension
+      },
       (error, result) => {
         if (error) reject(error);
         else resolve(result);
