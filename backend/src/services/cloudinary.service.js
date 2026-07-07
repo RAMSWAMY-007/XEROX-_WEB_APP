@@ -16,14 +16,11 @@ cloudinary.config({
  */
 exports.uploadBufferToCloudinary = (buffer, originalName, folder = 'xerox_uploads') => {
   return new Promise((resolve, reject) => {
-    // Sanitize filename for public_id, keep extension
-    const safeName = originalName ? originalName.replace(/[^a-zA-Z0-9.-]/g, '_') : `upload_${Date.now()}.pdf`;
-    
     const uploadStream = cloudinary.uploader.upload_stream(
       { 
         folder: folder, 
-        resource_type: 'raw',
-        public_id: `${Date.now()}_${safeName}` // Ensure it has a unique name with proper extension
+        resource_type: 'auto', // Auto allows Cloudinary to correctly identify PDFs and set Content-Type
+        format: 'pdf', // Force PDF format
       },
       (error, result) => {
         if (error) reject(error);

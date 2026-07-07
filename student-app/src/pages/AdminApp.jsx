@@ -141,7 +141,14 @@ const Dashboard = () => {
                     <p className="text-xs text-slate-400 mt-0.5">{order.student?.roll_number} • {order.student?.phone_number || 'No phone'}</p>
                   </td>
                   <td className="py-4">
-                    <a href={order.file_url} target="_blank" rel="noreferrer" className="text-admin-400 font-semibold hover:text-admin-300 hover:underline truncate max-w-[200px] block" title={order.file_name}>
+                    <a 
+                      href={order.file_url ? order.file_url.replace('/upload/', '/upload/fl_attachment/') : '#'} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="text-admin-400 font-semibold hover:text-admin-300 hover:underline truncate max-w-[200px] block" 
+                      title={order.file_name}
+                      download={order.file_name}
+                    >
                       {order.file_name}
                     </a>
                     <div className="flex flex-wrap gap-1.5 mt-2">
