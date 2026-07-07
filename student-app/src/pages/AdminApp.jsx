@@ -6,9 +6,11 @@ import io from 'socket.io-client';
 import { LayoutDashboard, History, Settings, LogOut, Edit2, Check, X, Download } from 'lucide-react';
 
 const downloadFile = async (url, filename) => {
+  if (!url) return;
   try {
     const finalFilename = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
     const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -19,8 +21,11 @@ const downloadFile = async (url, filename) => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error('Download failed:', error);
-    window.open(url, '_blank');
+    console.error('Download failed, using fallback:', error);
+    const finalFilename = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
+    // Cloudinary fallback: force attachment with specific filename
+    const fallbackUrl = url.replace('/upload/', `/upload/fl_attachment:${encodeURIComponent(finalFilename)}/`);
+    window.open(fallbackUrl, '_self');
   }
 };
 
@@ -161,7 +166,7 @@ const Dashboard = () => {
                   </td>
                   <td className="py-4">
                     <button 
-                      onClick={() => downloadFile(order.file_url ? order.file_url.replace('/upload/', '/upload/fl_attachment/') : '', order.file_name)}
+                      onClick={() => downloadFile(order.file_url, order.file_name)}
                       className="text-admin-400 font-semibold hover:text-admin-300 hover:underline truncate max-w-[200px] flex items-center gap-1" 
                       title={order.file_name}
                     >
